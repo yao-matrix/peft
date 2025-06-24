@@ -110,10 +110,10 @@ def create_and_prepare_model(args, data_args, training_args):
         )
 
         if compute_dtype == torch.float16 and args.use_4bit_quantization:
-            major, _ = torch.cuda.get_device_capability()
-            if major >= 8:
+            major, _ = torch.cuda.get_device_capability() if torch.cuda.is_available() else None
+            if major is not None and major >= 8:
                 print("=" * 80)
-                print("Your GPU supports bfloat16, you can accelerate training with the argument --bf16")
+                print("Your CUDA GPU supports bfloat16, you can accelerate training with the argument --bf16")
                 print("=" * 80)
         elif args.use_8bit_quantization:
             bnb_config = BitsAndBytesConfig(load_in_8bit=args.use_8bit_quantization)
